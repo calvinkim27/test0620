@@ -1,0 +1,23 @@
+# temporary files
+*~
+.#*
+\#*#
+
+.DS_Store
+
+# compiled Python modules
+*.pyc
+
+# SQLite 3 DB files
+*.db
+*.sqlite3
+
+# tox environments directory
+/.tox
+
+*.egg-info/
+/build/
+*.egg
+/doc/_build/
+
+/midauth/web/static/sass/
