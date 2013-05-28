@@ -5,7 +5,9 @@ except ImportError:
     from distribute_setup import use_setuptools
     use_setuptools()
     from setuptools import setup, find_packages
+import os.path
 import warnings
+from midauth import VERSION
 
 requirements = [
     'SQLAlchemy >= 0.8',
@@ -57,7 +59,8 @@ classifiers = [
 
 def readme():
     try:
-        with open('README.rst') as f:
+        root = os.path.abspath(os.path.dirname(__file__))
+        with open(os.path.join(root, 'README.rst')) as f:
             return f.read()
     except IOError:
         warnings.warn("Couldn't found README.rst", RuntimeWarning)
@@ -66,7 +69,7 @@ def readme():
 
 setup(
     name='midauth',
-    version='0.1.0.dev1',
+    version=VERSION,
     author='SmartStudy',
     author_email='dev@smartstudy.co.kr',
     maintainer='SmartStudy',
