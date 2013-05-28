@@ -13,6 +13,7 @@
 
 import sys
 import os
+import datetime
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -49,10 +50,16 @@ source_suffix = '.rst'
 # The master toctree document.
 master_doc = 'index'
 
+start_year = 2013
+current_year = datetime.date.today().year
+if start_year == current_year:
+    years = str(start_year)
+else:
+    years = u'{0}-{1}'.format(start_year, current_year)
 # General information about the project.
 project = u'midauth'
-copyright_holder = u'SmartStudy'
-copyright = u'2013, {0}'.format(copyright_holder)
+copyright_holder = u'SMARTSTUDY'
+copyright = u'{0}, {1}'.format(years, copyright_holder)
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

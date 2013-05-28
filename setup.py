@@ -70,9 +70,9 @@ def readme():
 setup(
     name='midauth',
     version=VERSION,
-    author='SmartStudy',
+    author='SMARTSTUDY',
     author_email='dev@smartstudy.co.kr',
-    maintainer='SmartStudy',
+    maintainer='SMARTSTUDY',
     maintainer_email='dev@smartstudy.co.kr',
     url='http://smartstudy.co.kr/',
     license='MIT License',
