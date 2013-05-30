@@ -23,10 +23,8 @@ def create_app(config=None):
     app.config.from_object(defaults)
     if isinstance(config, collections.Mapping):
         app.config.update(config)
-    elif config:
-        app.config.from_pyfile(config)
     else:
-        app.config.from_envvar('MIDAUTH_CONFIG')
+        app.config.from_pyfile(config)
     login_manager.init_app(app)
     init_sqla_session(app, app.config['DATABASE_URL'])
     init_blueprints(app, app.config['BLUEPRINTS'])
