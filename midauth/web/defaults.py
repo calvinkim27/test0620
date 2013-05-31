@@ -1,4 +1,5 @@
 import sassutils.wsgi
+from . import middlewares
 
 
 BLUEPRINTS = (
@@ -8,6 +9,7 @@ BLUEPRINTS = (
 
 
 WSGI_MIDDLEWARES = (
+    middlewares.MethodRewriteMiddleware,
     lambda app: sassutils.wsgi.SassMiddleware(app, {
         'midauth.web': ('resources/sass', 'static/sass', '/static/sass'),
     }),

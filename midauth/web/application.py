@@ -51,7 +51,7 @@ def init_blueprints(app, blueprints):
 
 
 def load_middlewares(app, middlewares):
-    for middleware in middlewares:
+    for middleware in reversed(middlewares):
         app.wsgi_app = middleware(app.wsgi_app)
 
 
