@@ -13,6 +13,9 @@ DEBUG = True
 
 # http://docs.sqlalchemy.org/en/rel_0_8/core/engines.html#database-urls
 DATABASE_URL = 'postgresql://postgres@localhost/midauth'
+
+GOOGLE_CLIENT_ID = ''
+GOOGLE_CLIENT_SECRET = ''
 '''
 
 
