@@ -62,12 +62,12 @@ def do_login():
         abort(400)
 
 
-@blueprint.route('/logout')
 @blueprint.route('/login', methods=['DELETE'])
 @login_required
 def logout():
     flask.ext.login.logout_user()
-    return redirect(url_for('dashboard.home'))
+    next_url = request.values.get('next', url_for('dashboard.home'))
+    return redirect(next_url)
 
 
 class UserRegistrationSchema(formencode.schema.Schema):
