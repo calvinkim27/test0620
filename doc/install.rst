@@ -15,7 +15,8 @@
 PostgreSQL 설치
 ---------------
 
-현재 midauth는 `PostgreSQL`_\ 만 지원하며, 아직 다른 DB를 지원할 계획은 없습니다.
+현재 midauth는 `PostgreSQL`_\ 만 지원하며, 아직 다른 DB를 지원할
+계획은 없습니다.
 
 .. _PostgreSQL: http://www.postgresql.org/
 
