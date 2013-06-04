@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<form method="post" action="{{ url_for('user.register') }}">
+{% formfill formdata with formerror %}
+    <input type="hidden" name="next" />
+    <input type="hidden" name="user_id" />
+    <p>
+        <label for="username">Username</label>
+        <input id="username" type="text" name="username" />
+    </p>
+    <p>
+        <label for="name">Name</label>
+        <input id="name" type="text" name="name" />
+    </p>
+    <p>
+        <label for="name">Nickname</label>
+        <input id="nickname" type="text" name="nickname" />
+    </p>
+    <p><button class="btn btn-primary" type="submit">Sign in</button></p>
+{% endformfill %}
+</form>
+{% endblock %}

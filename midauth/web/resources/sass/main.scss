@@ -1,0 +1,13 @@
+$iconSpritePath:      "../lib/bootstrap/img/glyphicons-halflings.png";
+$iconWhiteSpritePath: "../lib/bootstrap/img/glyphicons-halflings-white.png";
+
+@import "bootstrap/bootstrap";
+@import "bootstrap/responsive";
+
+body {
+    padding-top: $navbarHeight;
+}
+
+@import "user";
+
+@import "admin";

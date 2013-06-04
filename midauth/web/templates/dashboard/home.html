@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% if not current_user.is_authenticated() %}
+<div class="row-fluid">
+  <h1>midauth</h1>
+  {{ lipsum(2) }}
+  <p>
+    <a class="btn btn-primary btn-large" href="{{ url_for('user.login') }}">Login</a>
+  </p>
+</div>
+{% else %}
+  {{ lipsum(1) }}
+  <p>Logged in as {{ current_user.name }}(@{{ current_user.username }}).</p>
+{% endif %}
+{% endblock %}

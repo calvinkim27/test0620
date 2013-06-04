@@ -1,0 +1,41 @@
+{%- macro load_script() %}
+    {%- for path in varargs -%}
+        <script type="text/javascript" src="{{ url_for('static', filename=path) }}"></script>
+    {% endfor -%}
+{% endmacro -%}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}midauth{% endblock %}</title>
+    <link rel="stylesheet" type="text/css" media="all" href="{{ url_for('static', filename='sass/main.scss.css') }}" />
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    {{  load_script(
+            'lib/bootstrap/js/bootstrap.js',
+            'lib/jquery-ujs/rails.js',
+            'js/jquery-ujs-ext.js',
+            'js/main.js')
+    }}
+</head>
+<body>
+    <div class="navbar navbar-fixed-top">
+        <div class="navbar-inner">
+            <div class="container">
+                <a class="brand" href="/">{{ site_title|default('midauth') }}</a>
+                {% block navbar %}{% endblock %}
+                <ul class="nav pull-right">
+                {% if current_user.is_authenticated() %}
+                    <li><a href="{{ url_for('user.get', user=current_user.username) }}"><img src="{{ current_user.picture_url(20) }}" width="20" height="20" /> {{ current_user.name }}</a></li>
+                    <li><a class="signout" href="{{ url_for('user.logout') }}" data-method="delete" data-toggle="tooltip" title="Sign out"><i class="icon-off"></i></a></li>
+                {% else %}
+                    <li><a class="signin" href="{{ url_for('user.login') }}">Sign in</a></li>
+                {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div id="container" class="container {% block page_class %}{% endblock %}">
+        {%- block content %}{% endblock -%}
+    </div>
+</body>
+</html>

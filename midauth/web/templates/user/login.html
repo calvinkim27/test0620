@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block page_class %}user signin{% endblock %}
+
+{% block content %}
+<div class="row-fluid">
+    <section class="span6 offset3">
+        <h2>Sign in</h2>
+        <p>아래의 서비스 중 하나로 로그인하실 수 있습니다.</p>
+        <div class="row-fluid">
+            <ul class="services span8 offset2">
+                <li><a href="{{ url_for('.auth_google', next=next_url) }}" class="btn btn-large">Sign in with Google</a></li>
+                <li><a href="{{ url_for('.auth_google', next=next_url) }}" class="btn btn-large">Sign in with Google</a></li>
+                <li><a href="{{ url_for('.auth_google', next=next_url) }}" class="btn btn-large">Sign in with Google</a></li>
+                <li>{{ next_url }}</li>
+            </ul>
+        </div>
+    </section>
+</div>
+{% endblock %}

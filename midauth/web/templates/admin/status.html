@@ -1,0 +1,21 @@
+{% extends 'admin/base.html' %}
+
+{% block page_class %}{{ super() }} status{% endblock %}
+
+{% block content %}
+<section>
+<h3>설정</h3>
+<table class="table table-bordered table-striped">
+{%- for key, value in config|dictsort %}
+    <tr>
+        <th>{{ key }}</th>
+        {% if 'SECRET' in key.upper() -%}
+        <td class="secret">****************</td>
+        {%- else -%}
+        <td>{{ value|pprint }}</td>
+        {% endif %}
+    </tr>
+{% endfor -%}
+</table>
+</section>
+{% endblock %}

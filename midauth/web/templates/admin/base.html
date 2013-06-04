@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block page_class %}admin{% endblock %}
+
+{% block navbar %}
+<ul class="nav">
+    <li><a href="{{ url_for('admin.user.list') }}">사용자</a></li>
+    <li><a href="#">그룹</a></li>
+    <li><a href="#">애플리케이션</a></li>
+    <li><a href="{{ url_for('admin.dashboard.status') }}">상태</a></li>
+</ul>
+{% endblock %}

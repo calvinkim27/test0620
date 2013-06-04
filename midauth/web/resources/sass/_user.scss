@@ -1,0 +1,14 @@
+@import "bootstrap/variables";
+
+#container.user {
+}
+
+#container.user.signin {
+    .services {
+        list-style: none;
+        li {
+            margin: 10px 0 20px;
+            a { display: block; width: auto; }
+        }
+    }
+}
