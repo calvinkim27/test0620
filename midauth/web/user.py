@@ -99,16 +99,6 @@ def login():
     return render_template('user/login.html', next=next_url)
 
 
-@blueprint.route('/login', methods=['POST'])
-def do_login():
-    if request.form.get('username', False):
-        session['username'] = request.form['username']
-        next_url = request.values.get('next', url_for('dashboard.home'))
-        return redirect(next_url)
-    else:
-        abort(400)
-
-
 @blueprint.route('/login', methods=['DELETE'])
 @login_required
 def logout():
