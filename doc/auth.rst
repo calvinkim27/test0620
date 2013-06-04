@@ -10,7 +10,7 @@
 
 
 관련 API
--------
+--------
 
 * :http:get:`/users/(user)`
 
