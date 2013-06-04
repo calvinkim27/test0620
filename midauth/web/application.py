@@ -18,7 +18,7 @@ login_manager.anonymous_user = midauth.models.user.AnonymousUser
 current_user = flask.ext.login.current_user
 
 
-def create_app(config=None):
+def create_app(config):
     app = flask.Flask(__name__)
     app.config.from_object(defaults)
     if isinstance(config, collections.Mapping):
