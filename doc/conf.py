@@ -19,6 +19,7 @@ import datetime
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 sys.path.insert(0, os.path.abspath('..'))
+sys.path.insert(0, os.path.abspath('.'))
 
 from midauth import VERSION
 
@@ -36,6 +37,7 @@ extensions = [
     'sphinx.ext.todo',
     'sphinx.ext.coverage',
     'sphinxcontrib.httpdomain',
+    'sphinxcontrib.autohttp.flask',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
