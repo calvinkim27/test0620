@@ -5,7 +5,7 @@ from flask import Blueprint
 from flask import request, session, current_app
 from flask import render_template, redirect, url_for, abort
 import flask.ext.login
-from flask.ext.login import login_required
+from flask.ext.login import login_required, current_user
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.inspection import inspect
 import formencode.schema
@@ -49,7 +49,10 @@ def get(user):
 
 @blueprint.route('/login')
 def login():
-    return render_template('user/login.html')
+    if current_user.is_authenticated():
+        return redirect(url_for('.get', user=current_user.username))
+    next_url = request.values.get('next', url_for('dashboard.home'))
+    return render_template('user/login.html', next=next_url)
 
 
 @blueprint.route('/login', methods=['POST'])

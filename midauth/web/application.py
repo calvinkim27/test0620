@@ -28,6 +28,7 @@ def create_app(config=None):
     login_manager.init_app(app)
     init_sqla_session(app, app.config['DATABASE_URL'])
     init_blueprints(app, app.config['BLUEPRINTS'])
+    login_manager.login_view = 'user.login'
     load_middlewares(app, app.config['WSGI_MIDDLEWARES'])
     init_jinja_env(app)
     return app
