@@ -20,4 +20,7 @@
 *.egg
 /doc/_build/
 
+# local(development) config
+/local.cfg
+
 /midauth/web/static/sass/
