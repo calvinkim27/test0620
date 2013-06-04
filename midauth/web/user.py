@@ -95,7 +95,7 @@ def get(user):
 def login():
     if current_user.is_authenticated():
         return redirect(url_for('.get', user=current_user.username))
-    next_url = request.values.get('next', url_for('dashboard.home'))
+    next_url = request.values.get('next')
     return render_template('user/login.html', next=next_url)
 
 
@@ -103,7 +103,7 @@ def login():
 @login_required
 def logout():
     flask.ext.login.logout_user()
-    next_url = request.values.get('next', url_for('dashboard.home'))
+    next_url = request.values.get('next', url_for('.login'))
     return redirect(next_url)
 
 
@@ -124,7 +124,7 @@ def register():
     form = variable_decode(request.form)
     s = get_session()
     user = s.query(User).get(form.pop('user_id'))
-    next_url = form.pop('next', url_for('dashboard.home'))
+    next_url = form.pop('next', None)
     if user.status != User.UNREGISTERED:
         abort(400)
     try:
@@ -138,6 +138,8 @@ def register():
     user.created_at = datetime.datetime.now(tzutc())
     s.commit()
     flask.ext.login.login_user(user)
+    if not next_url:
+        next_url = url_for('.get', user=user.username)
     return redirect(next_url)
 
 
@@ -225,7 +227,8 @@ def auth_google_after():
         cred.token = token
         s.commit()
         flask.ext.login.login_user(cred.user)
-        next_url = request.values.get('next', url_for('dashboard.home'))
+        next_url = request.values.get('next',
+                                      url_for('.get', user=cred.user.username))
         return redirect(next_url)
 
 

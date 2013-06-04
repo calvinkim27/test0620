@@ -2,7 +2,7 @@ import types
 import collections
 
 import flask
-from flask import current_app
+from flask import current_app, redirect, url_for
 from flask.ext.login import LoginManager
 import formencode_jinja2
 import sqlalchemy.orm
@@ -49,6 +49,7 @@ def init_blueprints(app, blueprints):
         if isinstance(blueprint, types.ModuleType):
             blueprint = getattr(blueprint, 'blueprint')
         app.register_blueprint(blueprint, **kwargs)
+    app.add_url_rule('/', 'home', home)
 
 
 def load_middlewares(app, middlewares):
@@ -79,3 +80,7 @@ def teardown_sqla_sessions(exc=None):
     while sessions:
         s = sessions.pop()
         s.close()
+
+
+def home():
+    return redirect(url_for(current_app.login_manager.login_view))

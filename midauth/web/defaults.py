@@ -3,7 +3,6 @@ from . import middlewares
 
 
 BLUEPRINTS = (
-    ('.dashboard', {}),
     ('.user', {'url_prefix': '/users'}),
 )
 
