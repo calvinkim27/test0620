@@ -22,6 +22,7 @@ requirements = [
     'oauthlib',
     'requests',
     'requests-oauthlib',
+    'singledispatch',
 ]
 
 extras_require = {

@@ -19,7 +19,7 @@ from dateutil.tz import tzutc
 
 from midauth.models.user import User, Email, _USERNAME_RE
 from midauth.models.cred import GoogleOAuth2
-from .application import login_manager, get_session
+from .application import login_manager, get_session, respond
 
 
 blueprint = Blueprint('user', __name__)
@@ -88,7 +88,7 @@ def get(user):
         user = s.query(User).filter_by(username=user).one()
     except NoResultFound:
         abort(404)
-    return render_template('user/get.html', user=user)
+    return respond(user, 'user/get.html', user=user)
 
 
 @blueprint.route('/login')

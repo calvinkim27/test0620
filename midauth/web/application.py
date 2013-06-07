@@ -10,6 +10,7 @@ import sqlalchemy.orm
 import midauth.models.user
 from midauth.utils import importlib
 from . import defaults
+from . import dispatch
 
 
 login_manager = LoginManager()
@@ -80,6 +81,17 @@ def teardown_sqla_sessions(exc=None):
     while sessions:
         s = sessions.pop()
         s.close()
+
+
+def respond(object_to_response, template_name_or_list, **context):
+    simplified = dispatch.simplify(object_to_response)
+    if flask.request.accept_mimetypes.accept_html:
+        simplified.update(context)
+        return flask.render_template(template_name_or_list, **simplified)
+    if flask.request.accept_mimetypes.accept_json:
+        return flask.jsonify(**simplified)
+    else:
+        flask.abort(406)
 
 
 def home():
