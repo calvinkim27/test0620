@@ -1,16 +1,21 @@
 # -*- coding: utf-8 -*-
 import pytest
+from .db import engine, session
+import uuid
 
 from midauth.models.user import User, AnonymousUser, UserStatus
 
 
-def test_user():
+def test_user(session):
     """Check that users can be created and can set their password"""
     u = User(u'testuser', u'Test User', status=UserStatus.active)
-
     # Check authentication/permissions
     assert u.is_authenticated()
     assert u.active
+    assert not u.id
+    session.add(u)
+    session.commit()
+    assert isinstance(u.id, uuid.UUID)
 
 
 @pytest.mark.skipif('True')

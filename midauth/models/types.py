@@ -3,7 +3,14 @@ from sqlalchemy import types
 import flufl.enum
 
 
-class FluflEnum(types.TypeDecorator):
+class FluflEnum(types.SchemaType, types.TypeDecorator):
+    """
+
+    .. seealso::
+
+       - http://techspot.zzzeek.org/2011/01/14/the-enum-recipe/
+
+    """
     impl = types.Enum
 
     def __init__(self, enum_cls, **kwargs):
@@ -18,6 +25,13 @@ class FluflEnum(types.TypeDecorator):
         args = tuple(i.name for i in enum_cls)
         types.TypeDecorator.__init__(self, *args, **kwargs)
         self.enum_cls = enum_cls
+        self._kwargs = kwargs
+
+    def _set_table(self, table, column):
+        self.impl._set_table(table, column)
+
+    def copy(self):
+        return FluflEnum(self.enum_cls, **self._kwargs)
 
     def process_bind_param(self, value, dialect):
         if value is not None:
