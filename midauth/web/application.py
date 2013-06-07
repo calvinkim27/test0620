@@ -84,14 +84,29 @@ def teardown_sqla_sessions(exc=None):
 
 
 def respond(object_to_response, template_name_or_list, **context):
-    simplified = dispatch.simplify(object_to_response)
-    if flask.request.accept_mimetypes.accept_html:
-        simplified.update(context)
-        return flask.render_template(template_name_or_list, **simplified)
-    if flask.request.accept_mimetypes.accept_json:
-        return flask.jsonify(**simplified)
-    else:
+    responders = collections.OrderedDict([
+        ('text/html', respond_html),
+        ('application/xhtml+xml', respond_html),
+        ('application/json', respond_json),
+        ('text/javascript', respond_json),
+    ])
+    match = flask.request.accept_mimetypes.best_match(responders.keys(), None)
+    if not match:
         flask.abort(406)
+    else:
+        return responders[match](object_to_response, template_name_or_list,
+                                 context)
+
+
+def respond_html(obj, template, context):
+    simplified = dispatch.simplify(obj)
+    simplified.update(context)
+    return flask.render_template(template, **simplified)
+
+
+def respond_json(obj, template, context):
+    simplified = dispatch.simplify(obj)
+    return flask.jsonify(**simplified)
 
 
 def home():
