@@ -6,6 +6,7 @@ from flask import current_app, redirect, url_for
 from flask.ext.login import LoginManager
 import formencode_jinja2
 import sqlalchemy.orm
+from flask import json
 
 import midauth.models.user
 from midauth.utils import importlib
@@ -91,23 +92,30 @@ def respond(object_to_response, template_name_or_list, **context):
         ('application/json', respond_json),
         ('text/javascript', respond_json),
     ])
-    match = flask.request.accept_mimetypes.best_match(responders.keys(), None)
+    match = flask.request.accept_mimetypes.best_match(responders.keys(),
+                                                      'text/html')
     if not match:
         flask.abort(406)
     else:
-        return responders[match](object_to_response, template_name_or_list,
-                                 context)
+        response = responders[match](object_to_response,
+                                     template_name_or_list,
+                                     context)
+        response = flask.make_response(response)
+        response.mimetype = match
+        return response
 
 
 def respond_html(obj, template, context):
-    simplified = dispatch.simplify(obj)
-    simplified.update(context)
-    return flask.render_template(template, **simplified)
+    return flask.render_template(template, obj=obj, **context)
 
 
 def respond_json(obj, template, context):
     simplified = dispatch.simplify(obj)
-    return flask.jsonify(**simplified)
+    if isinstance(simplified, list):
+        raise ValueError(
+            'Responding a JSON array is restricted.\n'
+            'see also: http://flask.pocoo.org/docs/security/#json-security')
+    return json.dumps(simplified, indent=None if flask.request.is_xhr else 2)
 
 
 def home():
