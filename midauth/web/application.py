@@ -51,6 +51,7 @@ def init_blueprints(app, blueprints):
             blueprint = getattr(blueprint, 'blueprint')
         app.register_blueprint(blueprint, **kwargs)
     app.add_url_rule('/', 'home', home)
+    app.add_url_rule('/user', 'user', user)
 
 
 def load_middlewares(app, middlewares):
@@ -111,3 +112,11 @@ def respond_json(obj, template, context):
 
 def home():
     return redirect(url_for(current_app.login_manager.login_view))
+
+
+def user():
+    if not current_user.is_authenticated():
+        flask.abort(404)
+    else:
+        endpoint = current_app.config['USER_PROFILE_VIEW']
+        return current_app.view_functions[endpoint](user=current_user.username)

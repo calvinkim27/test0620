@@ -7,6 +7,9 @@ BLUEPRINTS = (
 )
 
 
+USER_PROFILE_VIEW = 'user.get'
+
+
 WSGI_MIDDLEWARES = (
     middlewares.MethodRewriteMiddleware,
     lambda app: sassutils.wsgi.SassMiddleware(app, {
