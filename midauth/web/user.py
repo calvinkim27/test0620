@@ -88,7 +88,7 @@ def get(user):
         user = s.query(User).filter_by(username=user).one()
     except NoResultFound:
         abort(404)
-    return respond(user, 'user/get.html', user=user)
+    return respond(user, 'user/get.html', picture_url=user.picture_url)
 
 
 @blueprint.route('/login')
