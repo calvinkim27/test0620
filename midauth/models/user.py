@@ -7,8 +7,10 @@ from sqlalchemy import types, sql, orm
 from sqlalchemy.schema import Column, ForeignKey
 from sqlalchemy.ext.hybrid import hybrid_property
 from dateutil.tz import tzutc
+import flufl.enum
 
 from .base import Base, ID
+from .types import FluflEnum
 from midauth.utils import gravatar
 
 __all__ = ['User', 'AnonymousUser', 'Email']
@@ -16,20 +18,20 @@ __all__ = ['User', 'AnonymousUser', 'Email']
 _USERNAME_RE = re.compile('^[\w.-]+$')
 
 
+class UserStatus(flufl.enum.Enum):
+    #: 사용자가 등록되기 전임
+    unregistered = 1
+    #: 가입된 사용자
+    active = 2
+    #: 사용자가 탈퇴하거나 계정이 정지됨
+    inactive = 3
+
+
 class User(Base):
     """사용자를 나타내는 모델
 
     """
     __tablename__ = 'user'
-
-    #: 사용자가 등록되기 전임
-    UNREGISTERED = 'unregistered'
-    #: 가입된 사용자
-    ACTIVE = 'active'
-    #: 사용자가 탈퇴하거나 계정이 정지됨
-    INACTIVE = 'inactive'
-
-    USER_STATUS = UNREGISTERED, ACTIVE, INACTIVE
 
     id = Column(ID, primary_key=True, default=uuid.uuid4)
     username = Column(
@@ -42,8 +44,8 @@ class User(Base):
     )
     name = Column(types.Unicode(60), nullable=False)
     status = Column(
-        types.Enum(name='user_status', *USER_STATUS),
-        nullable=False, default=UNREGISTERED,
+        FluflEnum(UserStatus, name='user_status'),
+        nullable=False, default=UserStatus.unregistered,
         doc="""계정의 현재 상태""")
     created_at = Column(types.DateTime(timezone=True),
                         default=sql.functions.now())
@@ -64,15 +66,15 @@ class User(Base):
         계정을 삭제하는 대신 이 값을 해제하세요.
 
         """
-        return self.status == self.ACTIVE
+        return self.status == UserStatus.active
 
     @active.setter
     def active(self, value):
-        self.status = self.ACTIVE if value else self.INACTIVE
+        self.status = UserStatus.active if value else UserStatus.inactive
 
     @orm.validates('username')
     def validate_username(self, key, username):
-        if self.status == self.UNREGISTERED:
+        if self.status == UserStatus.unregistered:
             assert username is None
         else:
             assert username not in ('.', '_')
@@ -87,14 +89,14 @@ class User(Base):
         return email
 
     def __init__(self, username, name, emails=(),
-                 status=UNREGISTERED, created_at=None):
+                 status=UserStatus.unregistered, created_at=None):
         """
 
         :param unicode username: 계정명
         :param unicode name: 사용자의 실명
         :keyword collections.Iterable emails: 이메일 목록
         :keyword status: 계정 활성화 여부
-        :type status: :obj:`UNREGISTERED` or :obj:`ACTIVE` or :obj:`INACTIVE`
+        :type status: UserStatus
         :keyword datetime created_at: 계정 생성 시각
 
         """

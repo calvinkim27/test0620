@@ -23,6 +23,7 @@ requirements = [
     'requests',
     'requests-oauthlib',
     'singledispatch',
+    'flufl.enum',
 ]
 
 extras_require = {

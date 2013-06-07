@@ -17,7 +17,7 @@ from requests_oauthlib import OAuth2Session
 from oauthlib.oauth2 import InvalidGrantError
 from dateutil.tz import tzutc
 
-from midauth.models.user import User, Email, _USERNAME_RE
+from midauth.models.user import User, UserStatus, Email, _USERNAME_RE
 from midauth.models.cred import GoogleOAuth2
 from .application import login_manager, get_session, respond
 
@@ -125,14 +125,14 @@ def register():
     s = get_session()
     user = s.query(User).get(form.pop('user_id'))
     next_url = form.pop('next', None)
-    if user.status != User.UNREGISTERED:
+    if user.status != UserStatus.unregistered:
         abort(400)
     try:
         data = UserRegistrationSchema().to_python(form)
     except formencode.Invalid as e:
         return render_template('user/register.html',
                                formdata=request.form, formerror=e.error_dict)
-    user.status = User.ACTIVE
+    user.status = UserStatus.active
     user.username = data['username']
     user.name = data['name']
     user.created_at = datetime.datetime.now(tzutc())
@@ -213,14 +213,14 @@ def auth_google_after():
         # 회원가입
         r = oauth_session.get('https://www.googleapis.com/oauth2/v3/userinfo')
         userinfo = r.json()
-        user = User(None, userinfo['name'], status=User.UNREGISTERED)
+        user = User(None, userinfo['name'], status=UserStatus.unregistered)
         user.emails.append(Email(userinfo['email'], verified=True))
         user.primary_email = userinfo['email']
         cred = GoogleOAuth2(user, token, user_key=user_key)
         s.add(user)
         s.add(cred)
         s.commit()
-    if cred.user.status == User.UNREGISTERED:
+    if cred.user.status == UserStatus.unregistered:
         return register_form(cred.user)
     else:
         # 로그인

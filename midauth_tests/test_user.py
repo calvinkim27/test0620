@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 import pytest
 
-from midauth.models.user import User, AnonymousUser
+from midauth.models.user import User, AnonymousUser, UserStatus
 
 
 def test_user():
     """Check that users can be created and can set their password"""
-    u = User(u'testuser', u'Test User', status=User.ACTIVE)
+    u = User(u'testuser', u'Test User', status=UserStatus.active)
 
     # Check authentication/permissions
     assert u.is_authenticated()
@@ -47,6 +47,7 @@ def test_anonymous_user():
 
 
 def test_get_picture_url():
-    user = User(u'eunchong', u'은총', ['eunchong@a.com'], status=User.ACTIVE)
+    user = User(u'eunchong', u'은총', ['eunchong@a.com'],
+                status=UserStatus.active)
     url = user.picture_url()
     assert url.startswith('http')
