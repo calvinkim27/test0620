@@ -32,7 +32,7 @@ from .base import Base, GUID
 from .types import FluflEnum
 from midauth.utils import gravatar
 
-__all__ = ['User', 'AnonymousUser', 'Email']
+__all__ = ['User', 'AnonymousUser', 'Email', 'UserStatus']
 
 _LOGIN_NAME_RE = re.compile('^[\w.-]+$')
 
