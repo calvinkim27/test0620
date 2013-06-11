@@ -166,7 +166,7 @@ class AnonymousUser(object):
         return None
 
     @property
-    def group_assoc(self):
+    def group_assocs(self):
         return set()
 
 

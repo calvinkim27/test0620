@@ -18,27 +18,6 @@ def test_user(session):
     assert isinstance(u.id, uuid.UUID)
 
 
-@pytest.mark.skipif('True')
-def test_user_password_auth():
-    u = User(u'testuser', u'Test User')
-    # Check user creation with no password
-    # assert not u.has_usable_password()
-
-    assert u.has_usable_password()
-    assert not u.check_password('bad')
-    assert u.check_password('testpw')
-
-    # Check we can manually set an unusable password
-    u.set_unusable_password()
-    u.save()
-    assert not u.check_password('testpw')
-    assert not u.has_usable_password()
-    u.set_password('testpw')
-    assert u.check_password('testpw')
-    u.set_password(None)
-    assert not u.has_usable_password()
-
-
 def test_anonymous_user():
     """Check the properties of the anonymous user"""
     a = AnonymousUser()
@@ -47,7 +26,7 @@ def test_anonymous_user():
     assert not a.active
     # assert not a.is_staff
     # assert not a.is_superuser
-    # assert a.groups.all().count() == 0
+    assert len(a.group_assocs) == 0
     # assert a.user_permissions.all().count() == 0
 
 
