@@ -24,3 +24,8 @@ def slugify(text, delim=u'-'):
     result = (w for word in _punct_re.split(text)
                 for w in unidecode(word).split())
     return unicode(delim.join(result))
+
+
+def underscored(text):
+    s1 = re.sub(r'(.)([A-Z][a-z]+)', r'\1_\2', text)
+    return re.sub(r'([a-z0-9])([A-Z])', r'\1_\2', s1).lower()

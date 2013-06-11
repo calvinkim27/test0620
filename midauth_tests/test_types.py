@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import pytest
 import sqlalchemy
-from sqlalchemy.schema import Column
+from sqlalchemy.schema import Table, Column, MetaData
 import flufl.enum
 from midauth.models.types import FluflEnum
 
@@ -10,10 +10,10 @@ def dump_create_ddl(schema):
     buffer = []
     def dump(sql, *multiparams, **params):
         buffer.append(sql.compile(dialect=engine.dialect))
-    engine = sqlalchemy.create_engine('postgresql://', strategy='mock',
-                                      executor=dump)
+    engine = sqlalchemy.create_engine('postgresql://localhost/postgres',
+                                      strategy='mock', executor=dump)
     schema.create(bind=engine, checkfirst=False)
-    return str(buffer[0])
+    return ';'.join(str(i) for i in buffer)
 
 
 class Colors(flufl.enum.Enum):
@@ -21,12 +21,17 @@ class Colors(flufl.enum.Enum):
 
 
 def test_create_ddl_flufl_enum():
-    t = FluflEnum(Colors)
-    assert t.enum_cls == Colors
-    with pytest.raises(sqlalchemy.exc.CompileError) as e:
-        dump_create_ddl(t)
-    assert 'ENUM type requires a name' in str(e)
-    t = FluflEnum(Colors, name='color')
-    expected = 'CREATE TYPE color AS ENUM ({0})'.format(
+    metadata = MetaData()
+    table = Table('test1', metadata,
+        Column('color', FluflEnum(Colors)),
+    )
+    assert table.c.color.type.enum_cls == Colors
+    expected = 'CREATE TYPE colors AS ENUM ({0})'.format(
         ','.join(repr(i.name) for i in Colors))
-    assert expected == dump_create_ddl(t)
+    assert expected in dump_create_ddl(table)
+    table = Table('test2', metadata,
+        Column('color', FluflEnum(Colors, name='color_enum_type')),
+    )
+    expected = 'CREATE TYPE color_enum_type AS ENUM ({0})'.format(
+        ','.join(repr(i.name) for i in Colors))
+    assert expected in dump_create_ddl(table)
