@@ -4,7 +4,7 @@ import uuid
 from sqlalchemy import types, sql
 from sqlalchemy.schema import Column, ForeignKey
 
-from .base import Base, ID
+from .base import Base, GUID
 from .user import User
 
 __all__ = ['Group']
@@ -13,7 +13,7 @@ __all__ = ['Group']
 class Group(Base):
     __tablename__ = 'group'
 
-    id = Column(ID, primary_key=True, default=uuid.uuid4)
+    id = Column(GUID, primary_key=True, default=uuid.uuid4)
     name = Column(types.Unicode(64), nullable=False)
     slug = Column(types.Unicode(32), nullable=False)
     created_at = Column(types.DateTime(timezone=True), nullable=False,
@@ -24,9 +24,9 @@ class Group(Base):
 class UserGroup(Base):
     __tablename__ = 'user_group'
 
-    user_id = Column(ID, ForeignKey(User.id, onupdate='CASCADE',
-                                             ondelete='CASCADE'),
-                     primary_key=True)
-    group_id = Column(ID, ForeignKey(Group.id, onupdate='CASCADE',
+    user_id = Column(GUID, ForeignKey(User.id, onupdate='CASCADE',
                                                ondelete='CASCADE'),
+                     primary_key=True)
+    group_id = Column(GUID, ForeignKey(Group.id, onupdate='CASCADE',
+                                                 ondelete='CASCADE'),
                       primary_key=True)

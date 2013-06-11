@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import sqlalchemy.ext.declarative
+from sqlalchemy import types
 from sqlalchemy.dialects import postgresql
+import uuid
 
 
 class Base(object):
@@ -10,9 +12,37 @@ class Base(object):
 Base = sqlalchemy.ext.declarative.declarative_base(cls=Base)
 
 
-#: .. todo::
-#:
-#:    다른 DB와의 호환을 고려한다면 제일 먼저 이 컬럼을 손봐야 함.
-#:    다행히, PostgreSQL UUID도 특별한 기능이 있는 건 아님.
-#:    bigint나 char 등으로 쉽게 대체 가능할 듯.
-ID = postgresql.UUID(as_uuid=True)
+class GUID(types.TypeDecorator):
+    """Platform-independent GUID type.
+
+    Uses Postgresql's UUID type, otherwise uses
+    CHAR(32), storing as stringified hex values.
+
+    .. seealso:: http://docs.sqlalchemy.org/en/rel_0_8/core/types.html#backend-agnostic-guid-type
+
+    """
+    impl = types.CHAR
+
+    def load_dialect_impl(self, dialect):
+        if dialect.name == 'postgresql':
+            return dialect.type_descriptor(postgresql.UUID())
+        else:
+            return dialect.type_descriptor(types.CHAR(32))
+
+    def process_bind_param(self, value, dialect):
+        if value is None:
+            return value
+        elif dialect.name == 'postgresql':
+            return str(value)
+        else:
+            if not isinstance(value, uuid.UUID):
+                return "%.32x" % uuid.UUID(value)
+            else:
+                # hexstring
+                return "%.32x" % value
+
+    def process_result_value(self, value, dialect):
+        if value is None:
+            return value
+        else:
+            return uuid.UUID(value)

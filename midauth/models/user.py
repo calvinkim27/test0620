@@ -9,7 +9,7 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from dateutil.tz import tzutc
 import flufl.enum
 
-from .base import Base, ID
+from .base import Base, GUID
 from .types import FluflEnum
 from midauth.utils import gravatar
 
@@ -33,7 +33,7 @@ class User(Base):
     """
     __tablename__ = 'user'
 
-    id = Column(ID, primary_key=True, default=uuid.uuid4)
+    id = Column(GUID, primary_key=True, default=uuid.uuid4)
     username = Column(
         types.Unicode(30), unique=True, nullable=True,
         doc="""로그인할 때 사용되는 계정 이름
@@ -156,8 +156,8 @@ class AnonymousUser(object):
 class Email(Base):
     __tablename__ = 'email'
 
-    user_id = Column(ID, ForeignKey(User.id, onupdate='CASCADE',
-                                             ondelete='CASCADE'),
+    user_id = Column(GUID, ForeignKey(User.id, onupdate='CASCADE',
+                                               ondelete='CASCADE'),
                      primary_key=True)
     address = Column(types.Unicode, primary_key=True, unique=True)
     verified = Column(types.Boolean, nullable=False, default=False)

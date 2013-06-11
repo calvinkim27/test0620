@@ -9,7 +9,7 @@ from sqlalchemy.schema import Column, ForeignKey
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.dialects import postgresql
 
-from .base import Base, ID
+from .base import Base, GUID
 from .user import User
 
 
@@ -20,8 +20,8 @@ class Credential(Base):
     """:class:`User`\ 가 가진 인증 수단"""
     __tablename__ = 'credential'
 
-    user_id = Column(ID, ForeignKey(User.id, onupdate='CASCADE',
-                                             ondelete='CASCADE'),
+    user_id = Column(GUID, ForeignKey(User.id, onupdate='CASCADE',
+                                               ondelete='CASCADE'),
                      primary_key=True)
     type = Column(types.Unicode(20), primary_key=True)
     key = Column(types.Unicode(256), primary_key=True)
