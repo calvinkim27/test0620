@@ -127,4 +127,4 @@ def user():
         flask.abort(404)
     else:
         endpoint = current_app.config['USER_PROFILE_VIEW']
-        return current_app.view_functions[endpoint](user=current_user.username)
+        return current_app.view_functions[endpoint](user=current_user.login)

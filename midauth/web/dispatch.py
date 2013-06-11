@@ -16,7 +16,7 @@ def resource_url(obj):
 
 @resource_url.register(models.user.User)
 def _(obj):
-    return flask.url_for('user.get', user=obj.username, _external=True)
+    return flask.url_for('user.get', user=obj.login, _external=True)
 
 
 @singledispatch
@@ -64,7 +64,7 @@ def _(value):
 def _(value):
     assert isinstance(value, models.user.User)
     return simplified_obj(
-        login=value.username,
+        login=value.login,
         id=value.id,
         avatar_url=value.picture_url(),
         gravatar_id=gravatar.gravatar_id(value.primary_email),

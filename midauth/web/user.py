@@ -17,7 +17,7 @@ from requests_oauthlib import OAuth2Session
 from oauthlib.oauth2 import InvalidGrantError
 from dateutil.tz import tzutc
 
-from midauth.models.user import User, UserStatus, Email, _USERNAME_RE
+from midauth.models.user import User, UserStatus, Email, _LOGIN_NAME_RE
 from midauth.models.cred import GoogleOAuth2
 from .application import login_manager, get_session, respond
 
@@ -65,7 +65,7 @@ def get(user):
          ]
        }
 
-    :param user_name: 사용자의 username
+    :param user: 사용자의 login name
 
     :statuscode 200: 정상 요청
 
@@ -85,7 +85,7 @@ def get(user):
     """
     s = get_session()
     try:
-        user = s.query(User).filter_by(username=user).one()
+        user = s.query(User).filter_by(login=user).one()
     except NoResultFound:
         abort(404)
     return respond(user, 'user/get.html', picture_url=user.picture_url)
@@ -94,7 +94,7 @@ def get(user):
 @blueprint.route('/login')
 def login():
     if current_user.is_authenticated():
-        return redirect(url_for('.get', user=current_user.username))
+        return redirect(url_for('.get', user=current_user.login))
     next_url = request.values.get('next')
     return render_template('user/login.html', next=next_url)
 
@@ -108,10 +108,10 @@ def logout():
 
 
 class UserRegistrationSchema(formencode.schema.Schema):
-    username = Pipe(validators=[
-        _v.Regex(_USERNAME_RE, strip=True),
-        _v.MaxLength(inspect(User).c.username.type.length),
-        _v.NotEmpty(messages={'empty': 'Please enter an username'}),
+    login = Pipe(validators=[
+        _v.Regex(_LOGIN_NAME_RE, strip=True),
+        _v.MaxLength(inspect(User).c.login.type.length),
+        _v.NotEmpty(messages={'empty': 'Please enter an login'}),
     ])
     name = Pipe(validators=[
         _v.MaxLength(inspect(User).c.name.type.length),
@@ -133,13 +133,13 @@ def register():
         return render_template('user/register.html',
                                formdata=request.form, formerror=e.error_dict)
     user.status = UserStatus.active
-    user.username = data['username']
+    user.login = data['login']
     user.name = data['name']
     user.created_at = datetime.datetime.now(tzutc())
     s.commit()
     flask.ext.login.login_user(user)
     if not next_url:
-        next_url = url_for('.get', user=user.username)
+        next_url = url_for('.get', user=user.login)
     return redirect(next_url)
 
 
@@ -160,7 +160,7 @@ def get_oauth_session(cred, sqla_session=None):
 
 def register_form(user):
     formdata = {
-        'username': user.username,
+        'login': user.login,
         'name': user.name,
         'next': request.values.get('next', ''),
         'user_id': user.id,
@@ -228,7 +228,7 @@ def auth_google_after():
         s.commit()
         flask.ext.login.login_user(cred.user)
         next_url = request.values.get('next',
-                                      url_for('.get', user=cred.user.username))
+                                      url_for('.get', user=cred.user.login))
         return redirect(next_url)
 
 

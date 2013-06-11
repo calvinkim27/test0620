@@ -34,7 +34,7 @@ from midauth.utils import gravatar
 
 __all__ = ['User', 'AnonymousUser', 'Email']
 
-_USERNAME_RE = re.compile('^[\w.-]+$')
+_LOGIN_NAME_RE = re.compile('^[\w.-]+$')
 
 
 UserStatus = flufl.enum.Enum('UserStatus', 'unregistered active inactive')
@@ -47,7 +47,7 @@ class User(Base):
     __tablename__ = 'user'
 
     id = Column(GUID, primary_key=True, default=uuid.uuid4)
-    username = Column(
+    login = Column(
         types.Unicode(30), unique=True, nullable=True,
         doc="""로그인할 때 사용되는 계정 이름
 
@@ -85,14 +85,14 @@ class User(Base):
     def active(self, value):
         self.status = UserStatus.active if value else UserStatus.inactive
 
-    @orm.validates('username')
-    def validate_username(self, key, username):
+    @orm.validates('login')
+    def validate_username(self, key, login):
         if self.status == UserStatus.unregistered:
-            assert username is None
+            assert login is None
         else:
-            assert username not in ('.', '_')
-            assert _USERNAME_RE.match(username), 'Enter a valid username.'
-        return username
+            assert login not in ('.', '_')
+            assert _LOGIN_NAME_RE.match(login), 'Enter a valid login name.'
+        return login
 
     @orm.validates('primary_email')
     def validate_primary_email(self, key, email):
@@ -101,11 +101,11 @@ class User(Base):
         assert email in (e.address for e in self.emails if e.verified)
         return email
 
-    def __init__(self, username, name, emails=(),
+    def __init__(self, login, name, emails=(),
                  status=UserStatus.unregistered, created_at=None):
         """
 
-        :param unicode username: 계정명
+        :param unicode login: 계정명
         :param unicode name: 사용자의 실명
         :keyword collections.Iterable emails: 이메일 목록
         :keyword status: 계정 활성화 여부
@@ -118,13 +118,13 @@ class User(Base):
         # status에 따라 다른 필드를 어떻게 검증할지가 바뀌기 때문에,
         # 가장 먼저 대입되어야 함.
         self.status = status
-        self.username = username
+        self.login = login
         self.name = name
         self.created_at = created_at
         self.emails = [Email(address=e) for e in emails]
 
     def __repr__(self):
-        return u'User({0.username!r}, {0.name!r}, active={0.active!r})' \
+        return u'User({0.login!r}, {0.name!r}, active={0.active!r})' \
             .format(self)
 
     def picture_url(self, size=44):
