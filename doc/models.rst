@@ -1,7 +1,19 @@
 모델
 ====
 
-.. toctree::
-   :maxdepth: 2
+:mod:`midauth.models.user`
+--------------------------
 
-   models/user
+.. automodule:: midauth.models.user
+
+
+:mod:`midauth.models.group`
+---------------------------
+
+.. automodule:: midauth.models.group
+
+
+:mod:`midauth.models.cred`
+--------------------------
+
+.. automodule:: midauth.models.cred

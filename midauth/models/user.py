@@ -1,4 +1,23 @@
 # -*- coding: utf-8 -*-
+"""
+
+.. class:: UserStatus
+
+   사용자의 가입 상태를 나타내는 열거형
+
+   .. attribute:: UserStatus.unregistered
+
+      사용자가 등록되기 전임
+
+   .. attribute:: UserStatus.active
+
+      가입된 사용자
+
+   .. attribute:: UserStatus.inactive
+
+      사용자가 탈퇴하거나 계정이 정지됨
+
+"""
 import re
 import datetime
 import uuid
@@ -18,13 +37,7 @@ __all__ = ['User', 'AnonymousUser', 'Email']
 _USERNAME_RE = re.compile('^[\w.-]+$')
 
 
-class UserStatus(flufl.enum.Enum):
-    #: 사용자가 등록되기 전임
-    unregistered = 1
-    #: 가입된 사용자
-    active = 2
-    #: 사용자가 탈퇴하거나 계정이 정지됨
-    inactive = 3
+UserStatus = flufl.enum.Enum('UserStatus', 'unregistered active inactive')
 
 
 class User(Base):
@@ -151,6 +164,10 @@ class AnonymousUser(object):
 
     def get_id(self):
         return None
+
+    @property
+    def group_assoc(self):
+        return set()
 
 
 class Email(Base):
