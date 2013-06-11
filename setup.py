@@ -24,6 +24,7 @@ requirements = [
     'requests-oauthlib',
     'singledispatch',
     'flufl.enum',
+    'text-unidecode',
 ]
 
 extras_require = {

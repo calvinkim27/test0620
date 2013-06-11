@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import absolute_import
 import pytest
 
@@ -7,6 +8,7 @@ import urllib2
 from midauth.utils import gravatar
 from midauth.utils import importlib
 from midauth.utils import conf
+from midauth.utils import text
 
 
 def test_gravatar_image_url():
@@ -45,3 +47,15 @@ def test_conf():
     exec str(config) in namespace
     assert 'SECRET_KEY' in namespace
     assert 'DATABASE_URL' in namespace
+
+
+def test_slugify_only_accepts_unicode_text():
+    with pytest.raises(TypeError):
+        text.slugify("Calm down: it's just a test")
+
+
+def test_slugify():
+    assert text.slugify(u"Calm down: it's just a test") == \
+        u'calm-down-it-s-just-a-test'
+    assert text.slugify(u'진정해! 이건 그냥 테스트라고') == \
+        u'jinjeonghae-igeon-geunyang-teseuteurago'
