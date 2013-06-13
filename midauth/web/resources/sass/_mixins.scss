@@ -1,0 +1,17 @@
+@import "bootstrap/mixins";
+
+@mixin user-card($height: 44px) {
+    @include clearfix;
+    padding: 0;
+    background-color: white;
+    box-shadow: 0 .5em 1em .1em rgba(50, 50, 50, .67);
+    line-height: $height;
+    img {
+        float: left;
+        display: block;
+        margin: 0 1em 0 0; padding: 0;
+        width: $height; height: $height;
+    }
+    .name {
+    }
+}

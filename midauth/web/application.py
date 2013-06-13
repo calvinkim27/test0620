@@ -64,6 +64,7 @@ def init_jinja_env(app):
     app.jinja_env.add_extension(formencode_jinja2.formfill)
     app.jinja_env.globals.update(
         current_user=current_user,
+        resource_url=dispatch.resource_url,
     )
 
 

@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block page_class %}user list{% endblock %}
+
+{% block content %}
+<ul class="users">
+{% for user in users %}
+    <li>
+        <img src="{{ user.picture_url(44) }}" width="44" height="44" />
+        <a class="name" href="{{ resource_url(user) }}">{{ user.name }}</a>
+        <span class="login-name">(@{{ user.login }})</span>
+        {% for g in user.group_assocs %}
+            <span class="group label">{{ g.group.name }}</span>
+        {% endfor %}
+    </li>
+{% endfor %}
+</ul>
+{% endblock content %}

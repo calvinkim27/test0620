@@ -1,6 +1,17 @@
 @import "bootstrap/variables";
+@import "mixins";
 
 #container.user {
+}
+
+#container.user.list {
+    .users {
+        list-style: none;
+    }
+    .users li {
+        @include user-card();
+        margin: 2em 0;
+    }
 }
 
 #container.user.signin {

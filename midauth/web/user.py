@@ -33,7 +33,7 @@ def load_user(user_id):
 
 @blueprint.route('', endpoint='list')
 def list_():
-    users = []
+    users = get_session().query(User).filter(User.active)
     return render_template('user/list.html', users=users)
 
 

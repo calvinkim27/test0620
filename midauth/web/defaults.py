@@ -4,6 +4,7 @@ from . import middlewares
 
 BLUEPRINTS = (
     ('.user', {'url_prefix': '/users'}),
+    ('.group', {'url_prefix': '/groups'}),
 )
 
 
