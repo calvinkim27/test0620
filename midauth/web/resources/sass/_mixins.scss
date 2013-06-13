@@ -4,7 +4,8 @@
     @include clearfix;
     padding: 0;
     background-color: white;
-    box-shadow: 0 .5em 1em .1em rgba(50, 50, 50, .67);
+    box-shadow: 0 .5em 1.5em rgba(0, 0, 0, .3),
+                0 0 1px rgba(0, 0, 0, .2);
     line-height: $height;
     img {
         float: left;

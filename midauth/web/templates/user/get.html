@@ -1,6 +1,11 @@
 {% extends 'base.html' %}
 {% block content %}
-    <img src="{{ picture_url(120) }}" width="120" height="120" />
-    <h1>{{ name }} <sub>@{{ login }}</sub></h1>
-    <address>{{ email }}</address>
+    <img src="{{ obj.picture_url(120) }}" width="120" height="120" />
+    <h1>{{ obj.name }} <sub>@{{ obj.login }}</sub></h1>
+    <address>{{ obj.email }}</address>
+    <ul class="groups">
+    {% for g in obj.group_assocs %}
+        <li><a href="{{ resource_url(g.group) }}">{{ g.group.name }}</a></li>
+    {% endfor %}
+    </ul>
 {% endblock %}

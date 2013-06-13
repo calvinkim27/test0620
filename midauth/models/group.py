@@ -28,6 +28,10 @@ class Group(Base):
         self.slug = slug
         self.users = set(GroupAssociation(group=self, user=u) for u in users)
 
+    def __repr__(self):
+        return u'{class_name}({0.name!r}, slug={0.slug!r})' \
+            .format(self, class_name=type(self).__name__)
+
 
 class GroupAssociation(Base):
     __tablename__ = 'group_association'

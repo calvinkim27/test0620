@@ -1,0 +1,35 @@
+@import "mixins";
+
+#container.group.list {
+    .group {
+        margin: 2em 0; padding-top: 1px;
+        background-color: white;
+        box-shadow: 0 .5em 1.5em rgba(0, 0, 0, .3),
+                    0 0 1px rgba(0, 0, 0, .2);
+
+        h1 {
+            margin: .5em 1em;
+            a { color: inherit; }
+        }
+        .users {
+            @include clearfix;
+            list-style: none;
+            margin: 0;
+            li {
+                float: left; margin: 0; padding: 0;
+                a, a img { display: block; }
+            }
+        }
+    }
+}
+
+#container.group.get {
+    .users {
+        list-style: none;
+        margin: 0;
+    }
+    .users li {
+        @include user-card();
+        margin: 2em 0;
+    }
+}
