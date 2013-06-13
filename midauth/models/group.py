@@ -18,7 +18,7 @@ class Group(Base):
     name = Column(types.Unicode(64), nullable=False)
     slug = Column(types.Unicode(32), nullable=False)
     created_at = Column(types.DateTime(timezone=True), nullable=False,
-                        default=sql.functions.now)
+                        default=sql.functions.now())
 
     users = orm.relationship(lambda: GroupAssociation, collection_class=set)
 
@@ -39,7 +39,7 @@ class GroupAssociation(Base):
                                                  ondelete='CASCADE'),
                       primary_key=True)
     created_at = Column(types.DateTime(timezone=True), nullable=False,
-                        default=sql.functions.now)
+                        default=sql.functions.now())
     primary = Column(types.Boolean, nullable=False, default=False)
 
     group = orm.relationship(Group)
