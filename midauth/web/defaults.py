@@ -5,6 +5,9 @@ from . import middlewares
 BLUEPRINTS = (
     ('.user', {'url_prefix': '/users'}),
     ('.group', {'url_prefix': '/groups'}),
+
+    ('.admin.dashboard', {'url_prefix': '/admin'}),
+    ('.admin.user', {'url_prefix': '/admin/users'}),
 )
 
 

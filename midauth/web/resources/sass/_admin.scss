@@ -1,0 +1,25 @@
+@import "bootstrap/variables";
+@import "mixins";
+
+#container.admin.status {
+    table td {
+        font-family: $monoFontFamily;
+        word-break: break-all;
+        word-wrap: break-word;
+        white-space: pre-wrap;
+    }
+}
+
+#container.admin.user {
+    .group {
+        h3 { }
+        ul {
+            list-style: none;
+            margin: 0; padding: 0;
+        }
+        li {
+            @include user-card();
+            margin: 2em 0;
+        }
+    }
+}
