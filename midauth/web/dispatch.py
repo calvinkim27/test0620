@@ -3,6 +3,7 @@ import datetime
 import uuid
 
 import flask
+import werkzeug.local
 from singledispatch import singledispatch
 
 from midauth import models
@@ -11,12 +12,23 @@ from midauth.utils import gravatar
 
 @singledispatch
 def resource_url(obj):
-    raise NotImplementedError
+    raise NotImplementedError('resource_url() is not implemented for {!r}'
+                              .format(obj))
+
+
+@resource_url.register(werkzeug.local.LocalProxy)
+def _(obj):
+    return resource_url(obj._get_current_object())
 
 
 @resource_url.register(models.user.User)
 def _(obj):
     return flask.url_for('user.get', user=obj.login, _external=True)
+
+
+@resource_url.register(models.group.Group)
+def _(obj):
+    return flask.url_for('group.get', group=obj.slug, _external=True)
 
 
 @singledispatch

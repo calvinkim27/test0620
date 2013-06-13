@@ -20,6 +20,7 @@ from dateutil.tz import tzutc
 from midauth.models.user import User, UserStatus, Email, _LOGIN_NAME_RE
 from midauth.models.cred import GoogleOAuth2
 from .application import login_manager, get_session, respond
+from .dispatch import resource_url
 
 
 blueprint = Blueprint('user', __name__)
@@ -94,7 +95,7 @@ def get(user):
 @blueprint.route('/login')
 def login():
     if current_user.is_authenticated():
-        return redirect(url_for('.get', user=current_user.login))
+        return redirect(resource_url(current_user))
     next_url = request.values.get('next')
     return render_template('user/login.html', next=next_url)
 
@@ -139,7 +140,7 @@ def register():
     s.commit()
     flask.ext.login.login_user(user)
     if not next_url:
-        next_url = url_for('.get', user=user.login)
+        next_url = resource_url(user)
     return redirect(next_url)
 
 
@@ -227,8 +228,7 @@ def auth_google_after():
         cred.token = token
         s.commit()
         flask.ext.login.login_user(cred.user)
-        next_url = request.values.get('next',
-                                      url_for('.get', user=cred.user.login))
+        next_url = request.values.get('next', resource_url(cred.user))
         return redirect(next_url)
 
 

@@ -16,6 +16,7 @@
             'js/jquery-ujs-ext.js',
             'js/main.js')
     }}
+    {% block extra_scripts %}{% endblock %}
 </head>
 <body>
     <div class="navbar navbar-fixed-top">
@@ -25,7 +26,7 @@
                 {% block navbar %}{% endblock %}
                 <ul class="nav pull-right">
                 {% if current_user.is_authenticated() %}
-                    <li><a href="{{ url_for('user.get', user=current_user.login) }}"><img src="{{ current_user.picture_url(20) }}" width="20" height="20" /> {{ current_user.name }}</a></li>
+                    <li><a href="{{ resource_url(current_user) }}"><img src="{{ current_user.picture_url(20) }}" width="20" height="20" /> {{ current_user.name }}</a></li>
                     <li><a class="signout" href="{{ url_for('user.logout') }}" data-method="delete" data-toggle="tooltip" title="Sign out"><i class="icon-off"></i></a></li>
                 {% else %}
                     <li><a class="signin" href="{{ url_for('user.login') }}">Sign in</a></li>
