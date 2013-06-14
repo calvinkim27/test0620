@@ -74,7 +74,7 @@ def get(user):
        키     값
        ====== ===
        id     unique, 변경 불가
-       uid    사용자의 ID. URI에 쓸 수 있는 형태여야 함. unique, 변경 가능
+       login  사용자의 ID. URI에 쓸 수 있는 형태여야 함. unique, 변경 가능
        name   사용자의 실명, 변경 가능
        nick   사용자의 별명, 변경 가능
        groups 사용자가 소속된 그룹의 URI 목록

@@ -5,6 +5,10 @@ midauth
    :alt: Build Status
    :target: https://drone.io/github.com/smartstudy/midauth/latest
 
+.. image:: https://coveralls.io/repos/smartstudy/midauth/badge.png?branch=master
+   :alt: Coverage Status
+   :target: https://coveralls.io/r/smartstudy/midauth?branch=master
+
 midauth is the authentication adaptor between external OAuth1/2 providers and
 in-house applications.
 
