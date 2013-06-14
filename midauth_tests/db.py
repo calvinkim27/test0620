@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import pytest
 import sqlalchemy
+from sqlalchemy.exc import ProgrammingError
 from midauth.models.base import Base
 
 
@@ -11,7 +12,10 @@ def engine(request):
     Base.metadata.create_all(engine)
     def fin():
         Base.metadata.drop_all(engine)
-        engine.execute('DROP EXTENSION IF EXISTS hstore')
+        try:
+            engine.execute('DROP EXTENSION IF EXISTS hstore')
+        except ProgrammingError:
+            pass
     request.addfinalizer(fin)
     return engine
 
