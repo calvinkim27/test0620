@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
+import collections
 import datetime
 import uuid
 
 import flask
 import werkzeug.local
 from singledispatch import singledispatch
+from dateutil.tz import tzutc
 
 from midauth import models
 from midauth.utils import gravatar
@@ -34,7 +36,8 @@ def _(obj):
 @singledispatch
 def simplify(value):
     """"""
-    raise NotImplementedError
+    raise NotImplementedError('simplify() is not implemented for {!r}'
+                              .format(value))
 
 
 def simplified_obj(**attributes):
@@ -50,11 +53,13 @@ def _(value):
     return value
 
 
+@simplify.register(collections.Iterable)
 @simplify.register(list)
 def _(value):
     return [simplify(i) for i in value]
 
 
+@simplify.register(collections.Mapping)
 @simplify.register(dict)
 def _(value):
     return {simplify(k): simplify(v) for k, v in value.iteritems()}
@@ -69,7 +74,7 @@ def _(value):
 @simplify.register(datetime.datetime)
 def _(value):
     assert isinstance(value, datetime.datetime)
-    return value.isoformat('T')
+    return value.astimezone(tzutc()).isoformat('T')
 
 
 @simplify.register(models.user.User)
