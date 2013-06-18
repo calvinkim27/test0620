@@ -29,6 +29,7 @@ def create_app(config):
         app.config.from_pyfile(config)
     login_manager.init_app(app)
     init_sqla_session(app, app.config['DATABASE_URL'])
+    init_error_handlers(app)
     init_blueprints(app, app.config['BLUEPRINTS'])
     login_manager.login_view = 'user.login'
     load_middlewares(app, app.config['WSGI_MIDDLEWARES'])
@@ -40,6 +41,14 @@ def init_sqla_session(app, db_url):
     app.config['SQLALCHEMY_ENGINE'] = engine = sqlalchemy.create_engine(db_url)
     app.config['SQLALCHEMY_SESSION'] = sqlalchemy.orm.sessionmaker(bind=engine)
     app.teardown_appcontext(teardown_sqla_sessions)
+
+
+def init_error_handlers(app):
+    @app.errorhandler(404)
+    def handle_page_not_found(e):
+        response = respond(None, '404.html')
+        response.status_code = 404
+        return response
 
 
 def init_blueprints(app, blueprints):
