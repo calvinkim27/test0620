@@ -17,3 +17,9 @@
 --------------------------
 
 .. automodule:: midauth.models.cred
+
+
+:mod:`midauth.models.auth`
+--------------------------
+
+.. automodule:: midauth.models.auth
