@@ -6,6 +6,8 @@ BLUEPRINTS = (
     ('.user', {'url_prefix': '/users'}),
     ('.group', {'url_prefix': '/groups'}),
 
+    ('.oauth', {'url_prefix': '/oauth2'}),
+
     ('.admin.dashboard', {'url_prefix': '/admin'}),
     ('.admin.user', {'url_prefix': '/admin/users'}),
 )

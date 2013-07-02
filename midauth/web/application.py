@@ -12,12 +12,15 @@ import midauth.models.user
 from midauth.utils import importlib
 from . import defaults
 from . import dispatch
+from .ext import OAuth2Provider
 
 
 login_manager = LoginManager()
 login_manager.anonymous_user = midauth.models.user.AnonymousUser
 
 current_user = flask.ext.login.current_user
+
+oauth2 = OAuth2Provider()
 
 
 def create_app(config):
@@ -28,6 +31,7 @@ def create_app(config):
     else:
         app.config.from_pyfile(config)
     login_manager.init_app(app)
+    oauth2.init_app(app)
     init_sqla_session(app, app.config['DATABASE_URL'])
     init_error_handlers(app)
     init_blueprints(app, app.config['BLUEPRINTS'])
