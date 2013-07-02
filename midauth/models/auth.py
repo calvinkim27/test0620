@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import uuid
+import os
+import base64
 from datetime import datetime, timedelta
 
 from sqlalchemy import types, orm
@@ -7,23 +9,9 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.schema import Column, ForeignKey
 from sqlalchemy.dialects import postgresql
 from dateutil.tz import tzutc
-import flufl.enum
 
 from .base import Base, GUID
 from .user import User
-from .types import FluflEnum
-
-
-class OAuth2GrantType(flufl.enum.Enum):
-    pass
-
-
-class OAuth2ResponseType(flufl.enum.Enum):
-    pass
-
-
-GrantTypeEnum = FluflEnum(OAuth2GrantType, name='oauth2_grant_type')
-ResponseTypeEnum = FluflEnum(OAuth2ResponseType, name='oauth2_response_type')
 
 
 def generate_client_secret():
@@ -33,28 +21,46 @@ def generate_client_secret():
     :rtype: basestring
 
     """
-    raise NotImplementedError()
+    return base64.urlsafe_b64encode(os.urandom(36))
 
 
 class Client(Base):
-    """외부 애플리케이션"""
-    __tablename__ = 'auth_client'
+    """외부 애플리케이션
+
+    .. seealso:: https://flask-oauthlib.readthedocs.org/en/latest/api.html#flask_oauthlib.provider.OAuth2Provider.clientgetter
+
+    """
+    __tablename__ = 'oauth2_client'
 
     id = Column(GUID, primary_key=True, default=uuid.uuid4)
     secret = Column(types.Unicode(64), nullable=False)
     name = Column(types.Unicode(40), nullable=False)
+    description = Column(types.UnicodeText, nullable=False)
     owner_id = Column(GUID, ForeignKey(User.id, onupdate='CASCADE',
                                                 ondelete='CASCADE'),
                       nullable=False)
-    grant_type = Column(GrantTypeEnum, nullable=False)
-    response_type = Column(ResponseTypeEnum, nullable=False)
-    scopes = Column(postgresql.ARRAY(types.Unicode(80)), nullable=False)
-    redirect_uri = Column(types.Unicode(), nullable=False)
-    description = Column(types.UnicodeText, nullable=False)
+    default_scopes = Column(postgresql.ARRAY(types.Unicode(80)), nullable=False)
+    redirect_uris = Column(postgresql.ARRAY(types.Unicode(255)), nullable=False)
 
     owner = orm.relationship(User)
 
-    def __init__(self, name, owner, redirect_uri, description=u'',
+    @property
+    def client_id(self):
+        return self.id.hex
+
+    @hybrid_property
+    def client_secret(self):
+        return self.secret
+
+    @property
+    def client_type(self):
+        return 'public'
+
+    @property
+    def default_redirect_uri(self):
+        return self.redirect_uris[0]
+
+    def __init__(self, name, owner, redirect_uris, description=u'',
                  id=None, secret=None):
         """
 
@@ -62,8 +68,8 @@ class Client(Base):
         :type name: unicode
         :param owner: 애플리케이션을 생성한 소유자
         :type owner: midauth.models.user.User
-        :keyword redirect_uri:
-        :type redirect_uri: basestring
+        :keyword redirect_uris:
+        :type redirect_uris: collections.Iterable
         :keyword id:
         :type id: uuid.UUID
         :keyword secret:
@@ -74,7 +80,7 @@ class Client(Base):
         """
         self.name = name
         self.owner = owner
-        self.redirect_uri = redirect_uri
+        self.redirect_uris = redirect_uris
         if isinstance(id, uuid.UUID):
             self.id = id
         elif id is None:
@@ -84,18 +90,17 @@ class Client(Base):
             self.id = uuid.UUID(id)
         self.secret = secret or generate_client_secret()
         self.description = description
+        self.default_scopes = []
 
     def __repr__(self):
         return u'auth.Client(client_id={0.id!r})'.format(self)
 
 
-class OAuth2Token(Base):
-    """OAuth2 인증에 사용되는 토큰들의 기반 클래스"""
-    __tablename__ = 'oauth2_token'
+class GrantToken(Base):
+    __tablename__ = 'oauth2_grant_token'
 
-    EXPIRATION_TIME = NotImplemented
+    EXPIRATION_TIME = timedelta(minutes=5)
 
-    type = Column(types.String(20), primary_key=True)
     code = Column(types.Unicode(100), primary_key=True)
     client_id = Column(GUID, ForeignKey(Client.id, onupdate='CASCADE',
                                                    ondelete='CASCADE'),
@@ -105,15 +110,50 @@ class OAuth2Token(Base):
                      nullable=False)
     scopes = Column(postgresql.ARRAY(types.Unicode(80)), nullable=False)
     expires_at = Column(types.DateTime(timezone=True), nullable=True)
+    redirect_uri = Column(types.Unicode(255), nullable=False)
 
     client = orm.relationship(Client)
     user = orm.relationship(User)
 
-    __mapper_args__ = {
-        'polymorphic_on': type,
-    }
+    @hybrid_property
+    def expires(self):
+        return self.expires_at
 
-    def __init__(self, client, user, code, scopes, expires_in=None):
+    def delete(self):
+        session = orm.session.object_session(self)
+        session.delete(self)
+        session.commit()
+        return self
+
+
+class BearerToken(Base):
+    __tablename__ = 'oauth2_bearer_token'
+
+    access_token = Column(types.Unicode(100), primary_key=True)
+    client_id = Column(GUID, ForeignKey(Client.id, onupdate='CASCADE',
+                                                   ondelete='CASCADE'),
+                       nullable=False)
+    user_id = Column(GUID, ForeignKey(User.id, onupdate='CASCADE',
+                                               ondelete='CASCADE'),
+                     nullable=False)
+    scopes = Column(postgresql.ARRAY(types.Unicode(80)), nullable=False)
+    expires_at = Column(types.DateTime(timezone=True), nullable=True)
+    refresh_token = Column(types.Unicode(100), nullable=True, unique=True)
+
+    client = orm.relationship(Client)
+    user = orm.relationship(User)
+
+    @hybrid_property
+    def expires(self):
+        """
+
+        .. seealso:: https://flask-oauthlib.readthedocs.org/en/latest/api.html#flask_oauthlib.provider.OAuth2Provider.tokengetter
+
+        """
+        return self.expires_at
+
+    def __init__(self, client, user, access_token, scopes, expires_in,
+                 refresh_token=None):
         """
 
         :param client:
@@ -128,41 +168,11 @@ class OAuth2Token(Base):
         :type expires_in: datetime.timedelta
 
         """
-        expires_in = expires_in or self.EXPIRATION_TIME
+        if not isinstance(expires_in, timedelta):
+            expires_in = timedelta(seconds=expires_in)
         self.client = client
         self.user = user
-        self.code = code
+        self.access_token = access_token
         self.scopes = scopes
         self.expires_at = datetime.now(tzutc()) + expires_in
-
-
-class BearerToken(Token):
-    """"""
-    EXPIRATION_TIME = timedelta(hours=1)
-
-    refresh_token = Column(types.Unicode(100), nullable=True, unique=True)
-
-    __mapper_args__ = {
-        'polymorphic_identity': 'bearer_token',
-    }
-
-    @hybrid_property
-    def access_token(self):
-        return self.code
-
-    @access_token.setter
-    def access_token(self, value):
-        self.code = value
-
-    def __init__(self, refresh_token=None, *args, **kwargs):
-        super(BearerToken, self).__init__(*args, **kwargs)
         self.refresh_token = refresh_token
-
-
-class AuthorizationCode(Token):
-    """"""
-    EXPIRATION_TIME = timedelta(minutes=10)
-
-    __mapper_args__ = {
-        'polymorphic_identity': 'authorization_code',
-    }
