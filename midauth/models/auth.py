@@ -18,10 +18,10 @@ def generate_client_secret():
     """
 
     :returns:
-    :rtype: basestring
+    :rtype: bytes
 
     """
-    return base64.urlsafe_b64encode(os.urandom(36))
+    return base64.urlsafe_b64encode(os.urandom(48))
 
 
 class Client(Base):
@@ -33,16 +33,11 @@ class Client(Base):
     __tablename__ = 'oauth2_client'
 
     id = Column(GUID, primary_key=True, default=uuid.uuid4)
-    secret = Column(types.Unicode(64), nullable=False)
+    secret = Column(types.String(64), nullable=False)
     name = Column(types.Unicode(40), nullable=False)
     description = Column(types.UnicodeText, nullable=False)
-    owner_id = Column(GUID, ForeignKey(User.id, onupdate='CASCADE',
-                                                ondelete='CASCADE'),
-                      nullable=False)
     default_scopes = Column(postgresql.ARRAY(types.Unicode(80)), nullable=False)
     redirect_uris = Column(postgresql.ARRAY(types.Unicode(255)), nullable=False)
-
-    owner = orm.relationship(User)
 
     @property
     def client_id(self):
@@ -60,14 +55,12 @@ class Client(Base):
     def default_redirect_uri(self):
         return self.redirect_uris[0]
 
-    def __init__(self, name, owner, redirect_uris, description=u'',
+    def __init__(self, name, redirect_uris, description=u'',
                  id=None, secret=None):
         """
 
         :param name: 애플리케이션의 이름
         :type name: unicode
-        :param owner: 애플리케이션을 생성한 소유자
-        :type owner: midauth.models.user.User
         :keyword redirect_uris:
         :type redirect_uris: collections.Iterable
         :keyword id:
@@ -79,7 +72,6 @@ class Client(Base):
 
         """
         self.name = name
-        self.owner = owner
         self.redirect_uris = redirect_uris
         if isinstance(id, uuid.UUID):
             self.id = id
@@ -93,7 +85,7 @@ class Client(Base):
         self.default_scopes = []
 
     def __repr__(self):
-        return u'auth.Client(client_id={0.id!r})'.format(self)
+        return u'auth.Client(id={0.id!r})'.format(self)
 
 
 class GrantToken(Base):
