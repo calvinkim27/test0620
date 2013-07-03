@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from . import app
 
 
 def test_get_wrong_user(app):

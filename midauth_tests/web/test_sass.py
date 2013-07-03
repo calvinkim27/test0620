@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from . import app
 
 
 def test_access_compiled_css(app):

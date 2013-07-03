@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import pytest
-from .db import engine, session
 from midauth.models.user import User, UserStatus
 from midauth.models.group import Group
 

@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-import pytest
-from .db import engine, session
 import uuid
 
 from midauth.models.user import User, AnonymousUser, UserStatus

@@ -1,4 +1,3 @@
-from . import app
 import sqlalchemy.orm
 from midauth.web.application import get_session
 
