@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import uuid
+from sqlalchemy.orm.session import object_session
 from flask.ext.login import current_user
 from flask.ext.oauthlib.provider import OAuth2Provider as BaseProvider
 
@@ -8,6 +9,12 @@ from midauth.models.auth import Client, GrantToken, BearerToken
 
 class OAuth2Provider(BaseProvider):
     def get_session(self):
+        """
+
+        :return:
+        :rtype: sqlalchemy.orm.session.Session
+
+        """
         from .application import get_session
         return get_session()
 
@@ -32,9 +39,9 @@ class OAuth2Provider(BaseProvider):
 
     def _grantsetter(self, client_id, code, request, *args, **kwargs):
         client = self._clientgetter(client_id)
-        user = current_user._get_current_object()
-        assert client is request.client
-        assert user is request.user
+        s = object_session(client)
+        user = s.merge(current_user._get_current_object())
+        assert client.client_id == request.client.client_id
         grant = GrantToken(
             client=client,
             user=user,
@@ -42,7 +49,6 @@ class OAuth2Provider(BaseProvider):
             scopes=request.scopes,
             redirect_uri=request.redirect_uri,
         )
-        s = self.get_session()
         s.add(grant)
         s.commit()
         return grant
@@ -67,12 +73,19 @@ class OAuth2Provider(BaseProvider):
     def _tokensetter(self, token, request, *args, **kwargs):
         s = self.get_session()
         query = s.query(BearerToken)
-        old_tokens = query.filter_by(client=request.client, user=request.user)
-        s.delete(old_tokens)
+        # clear old tokens
+        query.filter_by(client=request.client, user=request.user).delete()
+
+        client = s.merge(request.client)
+        user = s.merge(request.user)
+        scopes = token['scope'].split(' ')
         token = BearerToken(
-            client=request.client,
-            user=request.user,
-            **token
+            client=client,
+            user=user,
+            scopes=scopes,
+            access_token=token['access_token'],
+            expires_in=token['expires_in'],
+            refresh_token=token['refresh_token'],
         )
         s.add(token)
         s.commit()

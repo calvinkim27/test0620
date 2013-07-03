@@ -11,12 +11,12 @@ from midauth.models import auth
 blueprint = flask.Blueprint('oauth', __name__)
 
 
-@blueprint.route('/authorize')
+@blueprint.route('/authorize', methods=['GET', 'POST'])
 @login_required
 @oauth2.authorize_handler
-def authorize(client_id, **kwargs):
+def authorize(**kwargs):
     if flask.request.method == 'GET':
-        client_id = uuid.UUID(client_id)
+        client_id = uuid.UUID(kwargs['client_id'])
         s = get_session()
         client = s.query(auth.Client).get(client_id)
         return flask.render_template('oauth/authorize.html',

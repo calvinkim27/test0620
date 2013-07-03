@@ -82,7 +82,7 @@ class Client(Base):
             self.id = uuid.UUID(id)
         self.secret = secret or generate_client_secret()
         self.description = description
-        self.default_scopes = []
+        self.default_scopes = [u'user']
 
     def __repr__(self):
         return u'auth.Client(id={0.id!r})'.format(self)
@@ -101,21 +101,43 @@ class GrantToken(Base):
                                                ondelete='CASCADE'),
                      nullable=False)
     scopes = Column(postgresql.ARRAY(types.Unicode(80)), nullable=False)
-    expires_at = Column(types.DateTime(timezone=True), nullable=True)
+    expires_at = Column(types.DateTime(timezone=True), nullable=False)
     redirect_uri = Column(types.Unicode(255), nullable=False)
 
     client = orm.relationship(Client)
     user = orm.relationship(User)
 
-    @hybrid_property
+    @property
     def expires(self):
-        return self.expires_at
+        return self.expires_at.astimezone(tzutc()).replace(tzinfo=None)
 
     def delete(self):
         session = orm.session.object_session(self)
         session.delete(self)
         session.commit()
         return self
+
+    def __init__(self, client, user, code, scopes, redirect_uri):
+        """
+
+        :param client:
+        :type client: Client
+        :param user:
+        :type user: User
+        :param code:
+        :type code: basestring
+        :param scopes:
+        :type scopes: collections.Iterable
+        :keyword expires_in:
+        :type expires_in: datetime.timedelta
+
+        """
+        self.client = client
+        self.user = user
+        self.code = code
+        self.scopes = scopes
+        self.expires_at = datetime.now(tzutc()) + self.EXPIRATION_TIME
+        self.redirect_uri = redirect_uri
 
 
 class BearerToken(Base):
@@ -142,7 +164,7 @@ class BearerToken(Base):
         .. seealso:: https://flask-oauthlib.readthedocs.org/en/latest/api.html#flask_oauthlib.provider.OAuth2Provider.tokengetter
 
         """
-        return self.expires_at
+        return self.expires_at.astimezone(tzutc()).replace(tzinfo=None)
 
     def __init__(self, client, user, access_token, scopes, expires_in,
                  refresh_token=None):
@@ -152,9 +174,9 @@ class BearerToken(Base):
         :type client: Client
         :param user:
         :type user: User
-        :param code:
-        :type code: basestring
-        :param scopes:
+        :param access_token:
+        :type access_token: basestring
+        :keyword scopes:
         :type scopes: collections.Iterable
         :keyword expires_in:
         :type expires_in: datetime.timedelta
