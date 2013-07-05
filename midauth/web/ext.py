@@ -26,15 +26,15 @@ class OAuth2Provider(BaseProvider):
         :rtype: midauth.models.auth.Client
 
         """
-        client_id = uuid.UUID(client_id)
+        client_pk = uuid.UUID(client_id)
         s = self.get_session()
-        client = s.query(Client).get(client_id)
+        client = s.query(Client).get(client_pk)
         return client
 
     def _grantgetter(self, client_id, code):
-        client_id = uuid.UUID(client_id)
+        client_pk = uuid.UUID(client_id)
         s = self.get_session()
-        g = s.query(GrantToken).filter_by(client_id=client_id, code=code).one()
+        g = s.query(GrantToken).filter_by(client_pk=client_pk, code=code).one()
         return g
 
     def _grantsetter(self, client_id, code, request, *args, **kwargs):

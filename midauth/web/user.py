@@ -160,11 +160,12 @@ def get_oauth_session(cred, sqla_session=None):
 
 
 def register_form(user):
+    assert isinstance(user, User)
     formdata = {
         'login': user.login,
         'name': user.name,
         'next': request.values.get('next', ''),
-        'user_id': user.id,
+        'user_id': user.pk,
     }
     return render_template('user/register.html',
                            formdata=formdata)

@@ -32,7 +32,7 @@ class Client(Base):
     """
     __tablename__ = 'oauth2_client'
 
-    id = Column(GUID, primary_key=True, default=uuid.uuid4)
+    pk = Column(GUID, primary_key=True, default=uuid.uuid4)
     secret = Column(types.String(64), nullable=False)
     name = Column(types.Unicode(40), nullable=False)
     description = Column(types.UnicodeText, nullable=False)
@@ -41,7 +41,7 @@ class Client(Base):
 
     @property
     def client_id(self):
-        return self.id.hex
+        return self.pk.hex
 
     @hybrid_property
     def client_secret(self):
@@ -56,15 +56,15 @@ class Client(Base):
         return self.redirect_uris[0]
 
     def __init__(self, name, redirect_uris, description=u'',
-                 id=None, secret=None):
+                 pk=None, secret=None):
         """
 
         :param name: 애플리케이션의 이름
         :type name: unicode
         :keyword redirect_uris:
         :type redirect_uris: collections.Iterable
-        :keyword id:
-        :type id: uuid.UUID
+        :keyword pk:
+        :type pk: uuid.UUID
         :keyword secret:
         :type secret: basestring
         :keyword description:
@@ -73,19 +73,19 @@ class Client(Base):
         """
         self.name = name
         self.redirect_uris = redirect_uris
-        if isinstance(id, uuid.UUID):
-            self.id = id
-        elif id is None:
+        if isinstance(pk, uuid.UUID):
+            self.pk = pk
+        elif pk is None:
             # create new id
-            self.id = uuid.uuid4()
+            self.pk = uuid.uuid4()
         else:
-            self.id = uuid.UUID(id)
+            self.pk = uuid.UUID(pk)
         self.secret = secret or generate_client_secret()
         self.description = description
         self.default_scopes = [u'user']
 
     def __repr__(self):
-        return u'auth.Client(id={0.id!r})'.format(self)
+        return u'auth.Client(client_id={0.client_id!r})'.format(self)
 
 
 class GrantToken(Base):
@@ -94,10 +94,10 @@ class GrantToken(Base):
     EXPIRATION_TIME = timedelta(minutes=5)
 
     code = Column(types.Unicode(100), primary_key=True)
-    client_id = Column(GUID, ForeignKey(Client.id, onupdate='CASCADE',
+    client_pk = Column(GUID, ForeignKey(Client.pk, onupdate='CASCADE',
                                                    ondelete='CASCADE'),
                        nullable=False)
-    user_id = Column(GUID, ForeignKey(User.id, onupdate='CASCADE',
+    user_id = Column(GUID, ForeignKey(User.pk, onupdate='CASCADE',
                                                ondelete='CASCADE'),
                      nullable=False)
     scopes = Column(postgresql.ARRAY(types.Unicode(80)), nullable=False)
@@ -106,6 +106,10 @@ class GrantToken(Base):
 
     client = orm.relationship(Client)
     user = orm.relationship(User)
+
+    @property
+    def client_id(self):
+        return self.client_pk.hex
 
     @property
     def expires(self):
@@ -144,10 +148,10 @@ class BearerToken(Base):
     __tablename__ = 'oauth2_bearer_token'
 
     access_token = Column(types.Unicode(100), primary_key=True)
-    client_id = Column(GUID, ForeignKey(Client.id, onupdate='CASCADE',
+    client_pk = Column(GUID, ForeignKey(Client.pk, onupdate='CASCADE',
                                                    ondelete='CASCADE'),
                        nullable=False)
-    user_id = Column(GUID, ForeignKey(User.id, onupdate='CASCADE',
+    user_pk = Column(GUID, ForeignKey(User.pk, onupdate='CASCADE',
                                                ondelete='CASCADE'),
                      nullable=False)
     scopes = Column(postgresql.ARRAY(types.Unicode(80)), nullable=False)
@@ -156,6 +160,10 @@ class BearerToken(Base):
 
     client = orm.relationship(Client)
     user = orm.relationship(User)
+
+    @property
+    def client_id(self):
+        return self.client_pk.hex
 
     @hybrid_property
     def expires(self):

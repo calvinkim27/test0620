@@ -42,7 +42,7 @@ def get(group):
     except NoResultFound:
         abort(404)
     response = {
-        'id': group.id,
+        'id': group.pk,
         'slug': group.slug,
         'name': group.name,
         'users': (u.user for u in group.users),

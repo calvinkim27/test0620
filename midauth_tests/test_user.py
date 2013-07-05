@@ -10,16 +10,16 @@ def test_user(session):
     # Check authentication/permissions
     assert u.is_authenticated()
     assert u.active
-    assert not u.id
+    assert not u.pk
     session.add(u)
     session.commit()
-    assert isinstance(u.id, uuid.UUID)
+    assert isinstance(u.pk, uuid.UUID)
 
 
 def test_anonymous_user():
     """Check the properties of the anonymous user"""
     a = AnonymousUser()
-    assert a.id is None
+    assert a.pk is None
     assert not a.is_authenticated()
     assert not a.active
     # assert not a.is_staff

@@ -20,7 +20,7 @@ class Credential(Base):
     """:class:`User`\ 가 가진 인증 수단"""
     __tablename__ = 'credential'
 
-    user_id = Column(GUID, ForeignKey(User.id, onupdate='CASCADE',
+    user_pk = Column(GUID, ForeignKey(User.pk, onupdate='CASCADE',
                                                ondelete='CASCADE'),
                      primary_key=True)
     type = Column(types.Unicode(20), primary_key=True)

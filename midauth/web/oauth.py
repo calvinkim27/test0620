@@ -16,9 +16,9 @@ blueprint = flask.Blueprint('oauth', __name__)
 @oauth2.authorize_handler
 def authorize(**kwargs):
     if flask.request.method == 'GET':
-        client_id = uuid.UUID(kwargs['client_id'])
+        client_pk = uuid.UUID(kwargs['client_id'])
         s = get_session()
-        client = s.query(auth.Client).get(client_id)
+        client = s.query(auth.Client).get(client_pk)
         return flask.render_template('oauth/authorize.html',
                                      client=client, **kwargs)
     else:

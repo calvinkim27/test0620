@@ -14,7 +14,7 @@ __all__ = ['Group']
 class Group(Base):
     __tablename__ = 'group'
 
-    id = Column(GUID, primary_key=True, default=uuid.uuid4)
+    pk = Column(GUID, primary_key=True, default=uuid.uuid4)
     name = Column(types.Unicode(64), nullable=False)
     slug = Column(types.Unicode(32), nullable=False)
     created_at = Column(types.DateTime(timezone=True), nullable=False,
@@ -36,10 +36,10 @@ class Group(Base):
 class GroupAssociation(Base):
     __tablename__ = 'group_association'
 
-    user_id = Column(GUID, ForeignKey(User.id, onupdate='CASCADE',
+    user_pk = Column(GUID, ForeignKey(User.pk, onupdate='CASCADE',
                                                ondelete='CASCADE'),
                      primary_key=True)
-    group_id = Column(GUID, ForeignKey(Group.id, onupdate='CASCADE',
+    group_pk = Column(GUID, ForeignKey(Group.pk, onupdate='CASCADE',
                                                  ondelete='CASCADE'),
                       primary_key=True)
     created_at = Column(types.DateTime(timezone=True), nullable=False,

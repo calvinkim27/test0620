@@ -46,7 +46,7 @@ class User(Base):
     """
     __tablename__ = 'user'
 
-    id = Column(GUID, primary_key=True, default=uuid.uuid4)
+    pk = Column(GUID, primary_key=True, default=uuid.uuid4)
     login = Column(
         types.Unicode(30), unique=True, nullable=True,
         doc="""로그인할 때 사용되는 계정 이름
@@ -145,12 +145,12 @@ class User(Base):
         return False
 
     def get_id(self):
-        return unicode(self.id)
+        return unicode(self.pk)
 
 
 class AnonymousUser(object):
     """인증되지 않은 익명의 사용자"""
-    id = None
+    pk = None
     active = False
 
     def is_authenticated(self):
@@ -173,7 +173,7 @@ class AnonymousUser(object):
 class Email(Base):
     __tablename__ = 'email'
 
-    user_id = Column(GUID, ForeignKey(User.id, onupdate='CASCADE',
+    user_pk = Column(GUID, ForeignKey(User.pk, onupdate='CASCADE',
                                                ondelete='CASCADE'),
                      primary_key=True)
     address = Column(types.Unicode, primary_key=True, unique=True)

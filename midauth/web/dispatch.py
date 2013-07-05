@@ -82,7 +82,7 @@ def _(value):
     assert isinstance(value, models.user.User)
     return simplified_obj(
         login=value.login,
-        id=value.id,
+        id=value.pk,
         avatar_url=value.picture_url(),
         gravatar_id=gravatar.gravatar_id(value.primary_email),
         url=resource_url(value),
