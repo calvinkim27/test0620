@@ -17,7 +17,6 @@ requirements = [
     'libsass > 0.2.4',
     'FormEncode > 1.2',
     'FormEncode-Jinja2 >= 0.1.2',
-    'psycopg2cffi',
     'python-dateutil > 2',
     'oauthlib',
     'Flask-OAuthlib >= 0.2',
@@ -35,6 +34,12 @@ extras_require = {
     ],
     'debug': [
         'wdb',
+    ],
+    'postgres': [
+        'psycopg2',
+    ],
+    'postgres-pypy': [
+        'psycopg2cffi',
     ],
 }
 
