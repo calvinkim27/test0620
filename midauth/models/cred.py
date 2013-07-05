@@ -23,7 +23,7 @@ class Credential(Base):
     user_pk = Column(GUID, ForeignKey(User.pk, onupdate='CASCADE',
                                                ondelete='CASCADE'),
                      primary_key=True)
-    type = Column(types.Unicode(20), primary_key=True)
+    cred_type = Column(types.Unicode(20), primary_key=True)
     key = Column(types.Unicode(256), primary_key=True)
     value = Column(postgresql.HSTORE, nullable=False)
     created_at = Column(types.DateTime(timezone=True),
@@ -34,7 +34,7 @@ class Credential(Base):
     user = orm.relationship(User)
 
     __mapper_args__ = {
-        'polymorphic_on': type,
+        'polymorphic_on': cred_type,
     }
 
 
