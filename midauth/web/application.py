@@ -24,7 +24,7 @@ oauth2 = OAuth2Provider()
 
 
 def create_app(config):
-    app = flask.Flask(__name__)
+    app = flask.Flask('midauth.web')
     app.config.from_object(defaults)
     if isinstance(config, collections.Mapping):
         app.config.update(config)
