@@ -11,9 +11,9 @@ from midauth import VERSION
 
 requirements = [
     'SQLAlchemy >= 0.8',
-    'Flask >= 0.9',
+    'Flask >= 0.10.1',
     'Flask-Script >= 0.5',
-    'Flask-Login',
+    'Flask-Login >= 0.2.5',
     'libsass > 0.2.4',
     'FormEncode > 1.2',
     'FormEncode-Jinja2 >= 0.1.2',
