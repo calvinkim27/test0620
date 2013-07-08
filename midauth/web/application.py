@@ -4,6 +4,7 @@ import collections
 import flask
 from flask import current_app, redirect, url_for
 from flask.ext.login import LoginManager
+from flask.ext.oauthlib.client import OAuth
 import formencode_jinja2
 import sqlalchemy.orm
 from flask import json
@@ -21,6 +22,7 @@ login_manager.anonymous_user = midauth.models.user.AnonymousUser
 current_user = flask.ext.login.current_user
 
 oauth2 = OAuth2Provider()
+oauth_client = OAuth()
 
 
 def create_app(config):
@@ -32,6 +34,7 @@ def create_app(config):
         app.config.from_pyfile(config)
     login_manager.init_app(app)
     oauth2.init_app(app)
+    init_oauth_client(app)
     init_sqla_session(app, app.config['DATABASE_URL'])
     init_error_handlers(app)
     init_blueprints(app, app.config['BLUEPRINTS'])
@@ -79,6 +82,15 @@ def init_jinja_env(app):
         current_user=current_user,
         resource_url=dispatch.resource_url,
     )
+
+
+def init_oauth_client(app):
+    # TODO: apply https://github.com/lepture/flask-oauthlib/issues/23
+    from .user import google_oauth2
+    config = app.config['GOOGLE_OAUTH2']
+    google_oauth2.consumer_key = config['consumer_key']
+    google_oauth2.consumer_secret = config['consumer_secret']
+    oauth_client.init_app(app)
 
 
 def get_session():

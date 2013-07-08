@@ -18,3 +18,9 @@ def test_get_wrong_user(app):
 def test_wrong_args_to_register_form():
     with pytest.raises(TypeError):
         web_user.register_form(42)
+
+
+def test_register(app):
+    with app.test_client() as client:
+        r = client.post('/users/register')
+        assert r.status_code == 400

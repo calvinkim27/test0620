@@ -16,8 +16,10 @@ def config():
         'DATABASE_URL': 'postgresql://ecdysis@localhost/midauth_test',
         'SECRET_KEY': base64.b64encode(os.urandom(36)),
         'TESTING': True,
-        'GOOGLE_CLIENT_ID': '638907643171.apps.googleusercontent.com',
-        'GOOGLE_CLIENT_SECRET': 'kjZrqFoI_ZPxK0_g2lJbNvPT',
+        'GOOGLE_OAUTH2': {
+            'consumer_key': '638907643171.apps.googleusercontent.com',
+            'consumer_secret': 'kjZrqFoI_ZPxK0_g2lJbNvPT',
+        },
     }
 
 

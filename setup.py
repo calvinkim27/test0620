@@ -20,8 +20,6 @@ requirements = [
     'python-dateutil > 2',
     'oauthlib',
     'Flask-OAuthlib >= 0.2',
-    'requests',
-    'requests-oauthlib',
     'singledispatch',
     'flufl.enum',
     'text-unidecode',
