@@ -91,6 +91,11 @@ setup(
     packages=find_packages(exclude=[]),
     include_package_data=True,
     zip_safe=False,
+    entry_points={
+        'console_scripts': [
+            'midauth = midauth.management:main',
+        ],
+    },
     install_requires=requirements,
     extras_require=extras_require,
     tests_require=[
