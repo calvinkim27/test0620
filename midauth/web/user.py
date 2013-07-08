@@ -160,7 +160,8 @@ def get_oauth_session(cred, sqla_session=None):
 
 
 def register_form(user):
-    assert isinstance(user, User)
+    if not isinstance(user, User):
+        raise TypeError('user should be a {0!r}, not {1!r}'.format(User, user))
     formdata = {
         'login': user.login,
         'name': user.name,
