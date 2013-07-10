@@ -13,7 +13,7 @@ import midauth.web.application
 @pytest.fixture(scope='session')
 def config():
     return {
-        'DATABASE_URL': 'postgresql://midauth@localhost/midauth_test',
+        'DATABASE_URL': 'postgresql://midauth:midauth@localhost/midauth_test',
         'SECRET_KEY': base64.b64encode(os.urandom(36)),
         'TESTING': True,
         'GOOGLE_OAUTH2': {
