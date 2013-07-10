@@ -13,7 +13,7 @@ import midauth.web.application
 @pytest.fixture(scope='session')
 def config():
     return {
-        'DATABASE_URL': 'postgresql://ecdysis@localhost/midauth_test',
+        'DATABASE_URL': 'postgresql://midauth@localhost/midauth_test',
         'SECRET_KEY': base64.b64encode(os.urandom(36)),
         'TESTING': True,
         'GOOGLE_OAUTH2': {
@@ -26,14 +26,9 @@ def config():
 @pytest.fixture(scope='session')
 def engine(request, config):
     engine = sqlalchemy.create_engine(config['DATABASE_URL'])
-    engine.execute('CREATE EXTENSION IF NOT EXISTS hstore')
     Base.metadata.create_all(engine)
     def fin():
         Base.metadata.drop_all(engine)
-        try:
-            engine.execute('DROP EXTENSION IF EXISTS hstore')
-        except ProgrammingError:
-            pass
     request.addfinalizer(fin)
     return engine
 
