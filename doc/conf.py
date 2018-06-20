@@ -37,7 +37,7 @@ extensions = [
     'sphinx.ext.todo',
     'sphinx.ext.coverage',
     'sphinxcontrib.httpdomain',
-    'sphinxcontrib.autohttp.flask',
+    #'sphinxcontrib.autohttp.flask',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
